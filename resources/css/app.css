@@ -1,0 +1,246 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    
+    /* Instagram-inspired Pink Palette */
+    --color-pink-50: #fdf2f8;
+    --color-pink-100: #fce7f3;
+    --color-pink-200: #fbcfe8;
+    --color-pink-300: #f9a8d4;
+    --color-pink-400: #f472b6;
+    --color-pink-500: #ec4899;
+    --color-pink-600: #db2777;
+    --color-pink-700: #be185d;
+    --color-pink-800: #9d174d;
+    --color-pink-900: #831843;
+    
+    /* Warm gradient backgrounds */
+    --color-gradient-pink-start: #fff0f5;
+    --color-gradient-pink-mid: #ffe4ec;
+    --color-gradient-pink-end: #fff5f7;
+}
+
+/* Instagram-inspired gradient background */
+body {
+    background: linear-gradient(135deg, #fff0f5 0%, #ffe4ec 25%, #fff5f7 50%, #fff0f5 75%, #ffe4ec 100%);
+    background-attachment: fixed;
+}
+
+.dark body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #1a1a2e 50%, #16213e 75%, #1a1a2e 100%);
+    background-attachment: fixed;
+}
+
+/* Refined card styles */
+.card-instagram {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(236, 72, 153, 0.1);
+    box-shadow: 0 4px 30px rgba(236, 72, 153, 0.08);
+}
+
+.dark .card-instagram {
+    background: rgba(30, 30, 50, 0.95);
+    border: 1px solid rgba(236, 72, 153, 0.15);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Instagram-like button styles */
+.btn-pink {
+    background: linear-gradient(45deg, #ec4899, #f472b6);
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+}
+
+.btn-pink:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+}
+
+.btn-pink-outline {
+    background: transparent;
+    border: 2px solid #ec4899;
+    color: #ec4899;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-pink-outline:hover {
+    background: linear-gradient(45deg, #ec4899, #f472b6);
+    color: white;
+    border-color: transparent;
+}
+
+/* Refined input styles */
+.input-instagram {
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(236, 72, 153, 0.2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.input-instagram:focus {
+    border-color: #ec4899;
+    box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.1);
+    outline: none;
+}
+
+.dark .input-instagram {
+    background: rgba(30, 30, 50, 0.8);
+    border-color: rgba(236, 72, 153, 0.3);
+    color: white;
+}
+
+/* Story ring effect */
+.story-ring {
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    padding: 3px;
+    border-radius: 50%;
+}
+
+/* Smooth animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Staggered animation delays */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+
+/* Hover lift effect */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(236, 72, 153, 0.15);
+}
+
+/* Gradient text */
+.gradient-text {
+    background: linear-gradient(45deg, #ec4899, #f472b6, #f9a8d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Soft glow effect */
+.glow-pink {
+    box-shadow: 0 0 30px rgba(236, 72, 153, 0.2);
+}
+
+/* Navigation glass effect */
+.nav-glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(236, 72, 153, 0.1);
+}
+
+.dark .nav-glass {
+    background: rgba(20, 20, 40, 0.85);
+    border: 1px solid rgba(236, 72, 153, 0.15);
+}
+
+/* Badge styles */
+.badge-pink {
+    background: linear-gradient(45deg, #fce7f3, #fbcfe8);
+    color: #be185d;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.dark .badge-pink {
+    background: linear-gradient(45deg, #be185d, #9d174d);
+    color: #fce7f3;
+}
+
+/* Tab indicator */
+.tab-indicator {
+    background: linear-gradient(45deg, #ec4899, #f472b6);
+    height: 3px;
+    border-radius: 3px;
+}
+
+/* Admin Sidebar Styles */
+.admin-sidebar {
+    background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%) !important;
+    border-right: 2px solid #a855f7 !important;
+}
+
+.dark .admin-sidebar {
+    background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%) !important;
+    border-right: 2px solid #9333ea !important;
+}
+
+/* Admin badge pulse animation */
+@keyframes adminPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(168, 85, 247, 0);
+    }
+}
+
+.admin-badge-pulse {
+    animation: adminPulse 2s infinite;
+}
+
+/* Admin section divider */
+.admin-section-divider {
+    border-top: 2px dashed rgba(168, 85, 247, 0.3);
+    margin: 16px 0;
+}
+
+/* Custom scrollbar for sidebar */
+#sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+#sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+    background: rgba(236, 72, 153, 0.3);
+    border-radius: 3px;
+}
+
+#sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(236, 72, 153, 0.5);
+}
+
+/* Admin sidebar scrollbar */
+.admin-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(168, 85, 247, 0.3);
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(168, 85, 247, 0.5);
+}
