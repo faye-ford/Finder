@@ -1,0 +1,13 @@
+# Vercel ignore rules
+node_modules/
+vendor/
+storage/
+tests/
+.phpunit.cache/
+.git/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
