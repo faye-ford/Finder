@@ -73,17 +73,17 @@
                             <div class="flex flex-wrap gap-3">
                                 @if ($user->id !== auth()->id())
                                     @if ($user->banned_at)
-                                        <form method="POST" action="{{ route('admin.unban', ['user' => $user]) }}">
+                                        <form method="POST" action="{{ route('admin.unban', ['user' => $user]) }}" data-ajax>
                                             @csrf
                                             <button type="submit" class="rounded-3xl bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-200">Unban</button>
                                         </form>
                                     @else
-                                        <form method="POST" action="{{ route('admin.ban', ['user' => $user]) }}">
+                                        <form method="POST" action="{{ route('admin.ban', ['user' => $user]) }}" data-ajax>
                                             @csrf
                                             <button type="submit" class="rounded-3xl bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-200">Ban</button>
                                         </form>
                                     @endif
-                                    <form method="POST" action="{{ route('admin.user.destroy', ['user' => $user]) }}">
+                                    <form method="POST" action="{{ route('admin.user.destroy', ['user' => $user]) }}" data-ajax>
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="rounded-3xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200">Delete</button>
@@ -104,15 +104,15 @@
                             <p class="text-sm text-slate-600">Reported by {{ $report->user->name }} • {{ $report->created_at->diffForHumans() }}</p>
                             <p class="mt-3 text-slate-700">Reason: {{ $report->reason }}</p>
                             <div class="mt-4 flex flex-wrap gap-3">
-                                <form method="POST" action="{{ route('admin.report.resolve', ['report' => $report]) }}">
+                                <form method="POST" action="{{ route('admin.report.resolve', ['report' => $report]) }}" data-ajax>
                                     @csrf
                                     <button class="rounded-3xl bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-200">Resolve</button>
                                 </form>
-                                <form method="POST" action="{{ route('admin.report.delete-post', ['report' => $report]) }}">
+                                <form method="POST" action="{{ route('admin.report.delete-post', ['report' => $report]) }}" data-ajax>
                                     @csrf
                                     <button class="rounded-3xl bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-200">Delete Post</button>
                                 </form>
-                                <form method="POST" action="{{ route('admin.report.ban-user', ['report' => $report]) }}">
+                                <form method="POST" action="{{ route('admin.report.ban-user', ['report' => $report]) }}" data-ajax>
                                     @csrf
                                     <button class="rounded-3xl bg-fuchsia-100 px-4 py-2 text-sm font-semibold text-fuchsia-700 transition hover:bg-fuchsia-200">Ban User</button>
                                 </form>
@@ -125,22 +125,22 @@
             </div>
 
             <div class="rounded-[2rem] border border-rose-200 bg-white p-6 shadow-xl ring-1 ring-rose-100">
-                <h2 class="text-xl font-semibold text-slate-900">Comment moderation</h2>
+                <h2 class="text-xl font-semibold text-slate-900">Reported comments</h2>
                 <div class="mt-4 space-y-4">
                     @forelse ($comments as $comment)
-                        <div class="rounded-3xl border border-rose-200 bg-rose-50 p-4">
+                        <div id="comment-{{ $comment->id }}" class="rounded-3xl border border-rose-200 bg-rose-50 p-4">
                             <p class="font-semibold text-slate-900">{{ $comment->user->name }} on {{ $comment->post->destination }}</p>
                             <p class="mt-2 text-slate-700">{{ $comment->body }}</p>
                             <div class="mt-4 flex gap-3">
-                                <form method="POST" action="{{ route('admin.comment.destroy', ['comment' => $comment]) }}">
+                                <form method="POST" action="{{ route('admin.comment.destroy', ['comment' => $comment]) }}" data-ajax>
                                     @csrf
                                     @method('DELETE')
-                                    <button class="rounded-3xl bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-200">Delete comment</button>
+                                    <button type="submit" class="rounded-3xl bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-200">Delete comment</button>
                                 </form>
                             </div>
                         </div>
                     @empty
-                        <p class="text-sm text-slate-500">No recent comments to moderate.</p>
+                        <p class="text-sm text-slate-500">No reported comments to moderate.</p>
                     @endforelse
                 </div>
             </div>
@@ -158,16 +158,16 @@
                                 </div>
                                 <div class="flex flex-wrap gap-3">
                                     @if (! $post->is_approved)
-                                        <form method="POST" action="{{ route('admin.post.approve', ['post' => $post]) }}">
+                                        <form method="POST" action="{{ route('admin.post.approve', ['post' => $post]) }}" data-ajax>
                                             @csrf
                                             <button class="rounded-3xl bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-200">Approve</button>
                                         </form>
                                     @endif
-                                    <form method="POST" action="{{ route('admin.post.hide', ['post' => $post]) }}">
+                                    <form method="POST" action="{{ route('admin.post.hide', ['post' => $post]) }}" data-ajax>
                                         @csrf
                                         <button class="rounded-3xl bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-200">Hide</button>
                                     </form>
-                                    <form method="POST" action="{{ route('admin.post.toggle-comments', ['post' => $post]) }}">
+                                    <form method="POST" action="{{ route('admin.post.toggle-comments', ['post' => $post]) }}" data-ajax>
                                         @csrf
                                         <button class="rounded-3xl bg-purple-100 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-200">Toggle Comments</button>
                                     </form>
@@ -185,7 +185,7 @@
         <aside class="space-y-6">
             <div class="rounded-[2rem] border border-rose-200 bg-white p-6 shadow-xl ring-1 ring-rose-100">
                 <h2 class="text-xl font-semibold text-slate-900">Categories</h2>
-                <form method="POST" action="{{ route('admin.categories.store') }}" class="mt-4 space-y-4">
+                <form method="POST" action="{{ route('admin.categories.store') }}" data-ajax class="mt-4 space-y-4">
                     @csrf
                     <label class="block text-sm text-slate-700">
                         <span class="font-medium">Category name</span>
@@ -197,7 +197,7 @@
                     @foreach ($categories as $category)
                         <div class="flex items-center justify-between rounded-3xl border border-rose-200 bg-rose-50 px-4 py-3">
                             <span class="text-sm text-slate-700">{{ $category->name }}</span>
-                            <form method="POST" action="{{ route('admin.categories.destroy', ['category' => $category]) }}">
+                            <form method="POST" action="{{ route('admin.categories.destroy', ['category' => $category]) }}" data-ajax>
                                 @csrf
                                 @method('DELETE')
                                 <button class="rounded-full bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-200">Remove</button>
@@ -209,7 +209,7 @@
 
             <div class="rounded-[2rem] border border-purple-200 bg-white p-6 shadow-xl ring-1 ring-purple-100">
                 <h2 class="text-xl font-semibold text-slate-900">Locations</h2>
-                <form method="POST" action="{{ route('admin.locations.store') }}" class="mt-4 space-y-4">
+                <form method="POST" action="{{ route('admin.locations.store') }}" data-ajax class="mt-4 space-y-4">
                     @csrf
                     <label class="block text-sm text-slate-700">
                         <span class="font-medium">Location name</span>
@@ -221,7 +221,7 @@
                     @foreach ($locations as $location)
                         <div class="flex items-center justify-between rounded-3xl border border-purple-200 bg-purple-50 px-4 py-3">
                             <span class="text-sm text-slate-700">{{ $location->name }}</span>
-                            <form method="POST" action="{{ route('admin.locations.destroy', ['location' => $location]) }}">
+                            <form method="POST" action="{{ route('admin.locations.destroy', ['location' => $location]) }}" data-ajax>
                                 @csrf
                                 @method('DELETE')
                                 <button class="rounded-full bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-200">Remove</button>
@@ -231,46 +231,9 @@
                 </div>
             </div>
 
-            <div class="rounded-[2rem] border border-fuchsia-200 bg-white p-6 shadow-xl ring-1 ring-fuchsia-100">
-                <h2 class="text-xl font-semibold text-slate-900">Announcements</h2>
-                <form method="POST" action="{{ route('admin.announcements.store') }}" class="mt-4 space-y-4">
-                    @csrf
-                    <label class="block text-sm text-slate-700">
-                        <span class="font-medium">Title</span>
-                        <input type="text" name="title" class="mt-2 w-full rounded-3xl border border-fuchsia-200 bg-white px-4 py-3 focus:border-fuchsia-400 focus:ring-2 focus:ring-fuchsia-200" />
-                    </label>
-                    <label class="block text-sm text-slate-700">
-                        <span class="font-medium">Message</span>
-                        <textarea name="body" rows="3" class="mt-2 w-full rounded-3xl border border-fuchsia-200 bg-white px-4 py-3 focus:border-fuchsia-400 focus:ring-2 focus:ring-fuchsia-200"></textarea>
-                    </label>
-                    <label class="inline-flex items-center gap-3 text-sm text-slate-700">
-                        <input type="checkbox" name="active" value="1" class="h-4 w-4 rounded" checked>
-                        Publish announcement
-                    </label>
-                    <button class="rounded-3xl bg-fuchsia-400 px-4 py-3 text-sm font-semibold text-white transition hover:bg-fuchsia-500">Publish</button>
-                </form>
-                <div class="mt-6 space-y-3">
-                    @foreach ($announcements as $announcement)
-                        <div class="rounded-3xl border border-fuchsia-200 bg-fuchsia-50 p-4">
-                            <div class="flex items-center justify-between gap-3">
-                                <div>
-                                    <p class="font-semibold text-slate-900">{{ $announcement->title }}</p>
-                                    <p class="text-sm text-slate-600">{{ $announcement->created_at->diffForHumans() }}</p>
-                                </div>
-                                <form method="POST" action="{{ route('admin.announcements.destroy', ['announcement' => $announcement]) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="rounded-full bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-200">Remove</button>
-                                </form>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
             <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl ring-1 ring-slate-100">
                 <h2 class="text-xl font-semibold text-slate-900">Site settings</h2>
-                <form method="POST" action="{{ route('admin.settings.update') }}" class="mt-4 space-y-4">
+                <form method="POST" action="{{ route('admin.settings.update') }}" data-ajax class="mt-4 space-y-4">
                     @csrf
                     <label class="block text-sm text-slate-700">
                         <span class="font-medium">Website name</span>

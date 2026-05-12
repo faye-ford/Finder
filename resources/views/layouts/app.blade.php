@@ -3,16 +3,16 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="csrf-token" content="{{ csrf_token() }}" />
         @php
-            use App\Models\Announcement;
             use App\Models\Setting;
             $siteName = Setting::getValue('website_name', 'Finder');
             $themeColor = Setting::getValue('theme_color', 'rose');
             $maintenanceMode = Setting::getValue('maintenance_mode', 'false') === 'true';
-            $announcements = Announcement::where('active', true)->latest()->get();
         @endphp
         <title>{{ $siteName }} | Travel CMS</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
         <script>
             tailwind.config = {
                 theme: {
@@ -97,22 +97,6 @@
                 @endif
             @endauth
 
-            @if (! $announcements->isEmpty())
-                <div class="mx-auto mb-6 max-w-7xl overflow-hidden rounded-2xl border border-pink-200/50 bg-white/80 backdrop-blur-md px-6 py-4 text-sm text-slate-700 shadow-lg shadow-pink-100/50 sm:px-8">
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <p class="font-semibold text-pink-600">📢 Announcements</p>
-                            <p class="mt-1 text-sm text-slate-500">Stay up to date with the latest platform news.</p>
-                        </div>
-                        <div class="flex flex-wrap gap-2">
-                            @foreach ($announcements as $announcement)
-                                <span class="rounded-full bg-gradient-to-r from-pink-100 to-rose-100 px-4 py-2 text-sm font-medium text-pink-700 shadow-sm">{{ $announcement->title }}</span>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            @endif
-
             @if ($maintenanceMode)
                 <div class="mx-auto mb-6 max-w-7xl overflow-hidden rounded-2xl border border-rose-200/50 bg-rose-50/80 backdrop-blur-md px-6 py-4 text-sm text-slate-700 shadow-lg shadow-rose-100/50 sm:px-8">
                     <div class="flex items-center gap-3">
@@ -130,6 +114,115 @@
                 @yield('content')
             </main>
         </div>
+        
+        <!-- AJAX Handler - Inline for reliability -->
+        <script>
+        // Toggle Like function
+        function toggleLike(postId, url) {
+            var countEl = document.getElementById('like-count-' + postId);
+            var iconEl = document.getElementById('like-icon-' + postId);
+            var csrfToken = document.querySelector('meta[name="csrf-token"]');
+            
+            if (!csrfToken) {
+                alert('CSRF token not found');
+                return;
+            }
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken.content,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(function(response) { 
+                return response.json(); 
+            })
+            .then(function(data) {
+                console.log('Like response:', data);
+                if (countEl && data.likes_count !== undefined) {
+                    countEl.textContent = data.likes_count;
+                }
+                if (iconEl && data.liked !== undefined) {
+                    if (data.liked) {
+                        iconEl.setAttribute('fill', 'currentColor');
+                        iconEl.classList.add('liked');
+                    } else {
+                        iconEl.setAttribute('fill', 'none');
+                        iconEl.classList.remove('liked');
+                    }
+                }
+            })
+            .catch(function(err) { 
+                console.error('Like error:', err); 
+                alert('Error: ' + err.message);
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // GENERAL AJAX FORM HANDLER
+            document.addEventListener('submit', function(e) {
+                var form = e.target;
+                
+                if (!form.hasAttribute('data-ajax')) {
+                    return;
+                }
+                
+                var action = form.getAttribute('action') || '';
+                if (action.indexOf('posts.like') !== -1) {
+                    return;
+                }
+                
+                e.preventDefault();
+                
+                var csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (!csrfToken) return;
+                
+                var formData = new FormData(form);
+                var url = form.action;
+                var method = formData.get('_method') || form.method || 'POST';
+                
+                var submitBtn = form.querySelector('button[type="submit"]');
+                var originalText = submitBtn ? submitBtn.innerHTML : '';
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = 'Processing...';
+                }
+                
+                fetch(url, {
+                    method: method.toUpperCase(),
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken.content,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    alert(data.message || 'Success!');
+                    if (data.reload) {
+                        setTimeout(function() { window.location.reload(); }, 1000);
+                    }
+                    if (data.removed && data.elementId) {
+                        var el = document.getElementById(data.elementId);
+                        if (el) el.remove();
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                })
+                .finally(function() {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                });
+            });
+        });
+        </script>
     </body>
 </html>
 

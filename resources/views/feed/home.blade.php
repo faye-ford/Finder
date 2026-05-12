@@ -106,13 +106,10 @@
 
                         <!-- Action buttons - Instagram style -->
                         <div class="flex items-center gap-2 border-b border-pink-100 pb-4">
-                            <form method="POST" action="{{ route('posts.like', ['post' => $post]) }}" class="inline-flex">
-                                @csrf
-                                <button class="group/btn inline-flex items-center gap-2 rounded-xl border border-pink-200 bg-pink-50/50 px-4 py-2.5 text-sm font-medium text-slate-700 transition-all hover:bg-pink-100 hover:border-pink-300">
-                                    <svg class="h-5 w-5 text-pink-500 transition-transform group-hover/btn:scale-110" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                    <span class="text-pink-600">{{ $post->likes_count }}</span>
-                                </button>
-                            </form>
+                            <button type="button" onclick="toggleLike({{ $post->id }}, '{{ route('posts.like', ['post' => $post]) }}')" class="group/btn inline-flex items-center gap-2 rounded-xl border border-pink-200 bg-pink-50/50 px-4 py-2.5 text-sm font-medium text-slate-700 transition-all hover:bg-pink-100 hover:border-pink-300">
+                                <svg id="like-icon-{{ $post->id }}" class="h-5 w-5 text-pink-500 transition-transform group-hover/btn:scale-110 {{ $post->likes->contains('user_id', auth()->id()) ? 'liked' : '' }}" fill="{{ $post->likes->contains('user_id', auth()->id()) ? 'currentColor' : 'none' }}" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                <span id="like-count-{{ $post->id }}" class="text-pink-600">{{ $post->likes_count }}</span>
+                            </button>
                             <form method="POST" action="{{ route('posts.comment', ['post' => $post]) }}" class="inline-flex">
                                 @csrf
                                 <button class="group/btn inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-purple-50/50 px-4 py-2.5 text-sm font-medium text-slate-700 transition-all hover:bg-purple-100 hover:border-purple-300">

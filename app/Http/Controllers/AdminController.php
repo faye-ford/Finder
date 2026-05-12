@@ -49,10 +49,22 @@ class AdminController extends Controller
             ->withQueryString();
 
         $reports = Report::with(['user', 'post.user'])->where('status', 'pending')->latest()->get();
-        $comments = Comment::with(['user', 'post'])->latest()->limit(10)->get();
+        
+        // Get comments from reported posts - show comments from posts that have reports
+        $reportedPostIds = Report::where('status', 'pending')->pluck('post_id')->unique();
+        $comments = Comment::with(['user', 'post'])
+            ->whereHas('post', fn ($query) => $query->whereIn('id', $reportedPostIds))
+            ->latest()
+            ->limit(10)
+            ->get();
+        
+        // If no reported comments found, show empty
+        if ($comments->isEmpty()) {
+            $comments = collect([]);
+        }
+        
         $categories = Category::orderBy('name')->get();
         $locations = Location::orderBy('name')->get();
-        $announcements = Announcement::latest()->get();
         $settings = Setting::all()->pluck('value', 'key')->toArray();
 
         $totalUsers = User::count();
@@ -70,7 +82,6 @@ class AdminController extends Controller
             'comments',
             'categories',
             'locations',
-            'announcements',
             'settings',
             'totalUsers',
             'totalPosts',
@@ -86,10 +97,17 @@ class AdminController extends Controller
         $this->authorizeAdmin();
 
         if ($user->id === Auth::id()) {
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'You cannot ban yourself.'], 422);
+            }
             return back()->with('error', 'You cannot ban yourself.');
         }
 
         $user->update(['banned_at' => now()]);
+
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'User has been banned.']);
+        }
 
         return back()->with('status', 'User has been banned.');
     }
@@ -100,6 +118,10 @@ class AdminController extends Controller
 
         $user->update(['banned_at' => null]);
 
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'User has been unbanned.']);
+        }
+
         return back()->with('status', 'User has been unbanned.');
     }
 
@@ -108,10 +130,17 @@ class AdminController extends Controller
         $this->authorizeAdmin();
 
         if ($user->id === Auth::id()) {
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'You cannot delete your own account.'], 422);
+            }
             return back()->with('error', 'You cannot delete your own account.');
         }
 
         $user->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'User account deleted.', 'removed' => true, 'elementId' => 'user-' . $user->id]);
+        }
 
         return back()->with('status', 'User account deleted.');
     }
@@ -122,6 +151,10 @@ class AdminController extends Controller
 
         $post->update(['is_hidden' => true]);
 
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Post has been hidden from the public feed.']);
+        }
+
         return back()->with('status', 'Post has been hidden from the public feed.');
     }
 
@@ -130,6 +163,10 @@ class AdminController extends Controller
         $this->authorizeAdmin();
 
         $post->update(['is_approved' => true]);
+
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Post has been approved.']);
+        }
 
         return back()->with('status', 'Post has been approved.');
     }
@@ -140,6 +177,10 @@ class AdminController extends Controller
 
         $post->update(['comments_enabled' => ! $post->comments_enabled]);
 
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Comment status updated.']);
+        }
+
         return back()->with('status', 'Comment status updated.');
     }
 
@@ -148,6 +189,10 @@ class AdminController extends Controller
         $this->authorizeAdmin();
 
         $report->update(['status' => 'resolved']);
+
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Report marked as resolved.', 'removed' => true, 'elementId' => 'report-' . $report->id]);
+        }
 
         return back()->with('status', 'Report marked as resolved.');
     }
@@ -170,6 +215,10 @@ class AdminController extends Controller
 
         $report->update(['status' => 'resolved']);
 
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Reported post deleted.', 'removed' => true, 'elementId' => 'report-' . $report->id]);
+        }
+
         return back()->with('status', 'Reported post deleted.');
     }
 
@@ -185,6 +234,10 @@ class AdminController extends Controller
 
         $report->update(['status' => 'resolved']);
 
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'User has been banned and report resolved.']);
+        }
+
         return back()->with('status', 'User has been banned and report resolved.');
     }
 
@@ -193,6 +246,14 @@ class AdminController extends Controller
         $this->authorizeAdmin();
 
         $comment->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Comment deleted.',
+                'removed' => true,
+                'elementId' => 'comment-' . $comment->id
+            ]);
+        }
 
         return back()->with('status', 'Comment deleted.');
     }
@@ -210,6 +271,10 @@ class AdminController extends Controller
             'slug' => str()->slug($data['name']),
         ]);
 
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Category added.', 'reload' => true]);
+        }
+
         return back()->with('status', 'Category added.');
     }
 
@@ -218,6 +283,10 @@ class AdminController extends Controller
         $this->authorizeAdmin();
 
         $category->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Category removed.', 'removed' => true, 'elementId' => 'category-' . $category->id]);
+        }
 
         return back()->with('status', 'Category removed.');
     }
@@ -235,6 +304,10 @@ class AdminController extends Controller
             'slug' => str()->slug($data['name']),
         ]);
 
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Location added.', 'reload' => true]);
+        }
+
         return back()->with('status', 'Location added.');
     }
 
@@ -243,6 +316,10 @@ class AdminController extends Controller
         $this->authorizeAdmin();
 
         $location->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Location removed.', 'removed' => true, 'elementId' => 'location-' . $location->id]);
+        }
 
         return back()->with('status', 'Location removed.');
     }
@@ -263,6 +340,10 @@ class AdminController extends Controller
             'active' => $data['active'] ?? true,
         ]);
 
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Announcement published.', 'reload' => true]);
+        }
+
         return back()->with('status', 'Announcement published.');
     }
 
@@ -272,7 +353,33 @@ class AdminController extends Controller
 
         $announcement->delete();
 
+        if (request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Announcement removed.',
+                'removed' => true,
+                'elementId' => 'announcement-' . $announcement->id,
+                'reload' => true
+            ]);
+        }
+
         return back()->with('status', 'Announcement removed.');
+    }
+
+    public function announcementsPage(Request $request)
+    {
+        $this->authorizeAdmin();
+
+        $search = $request->query('search');
+        
+        $announcements = Announcement::when($search, fn ($query) => $query->where(function ($query) use ($search) {
+            $query->where('title', 'like', "%{$search}%")
+                ->orWhere('body', 'like', "%{$search}%");
+        }))
+        ->latest()
+        ->paginate(20)
+        ->withQueryString();
+
+        return view('admin.announcements', compact('announcements', 'search'));
     }
 
     public function updateSettings(Request $request)
@@ -293,6 +400,10 @@ class AdminController extends Controller
         Setting::setValue('approval_required', $data['approval_required'] ? 'true' : 'false');
         Setting::setValue('maintenance_mode', $data['maintenance_mode'] ? 'true' : 'false');
 
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Site settings saved.']);
+        }
+
         return back()->with('status', 'Site settings saved.');
     }
 
@@ -309,6 +420,10 @@ class AdminController extends Controller
         }
 
         $post->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Post deleted permanently.', 'removed' => true, 'elementId' => 'post-' . $post->id]);
+        }
 
         return back()->with('status', 'Post deleted permanently.');
     }

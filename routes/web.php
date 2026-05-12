@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/locations/{location}', [AdminController::class, 'destroyLocation'])->name('admin.locations.destroy');
         Route::post('/admin/announcements', [AdminController::class, 'storeAnnouncement'])->name('admin.announcements.store');
         Route::delete('/admin/announcements/{announcement}', [AdminController::class, 'destroyAnnouncement'])->name('admin.announcements.destroy');
+        Route::get('/admin/announcements', [AdminController::class, 'announcementsPage'])->name('admin.announcements.index');
         Route::post('/admin/settings', [AdminController::class, 'updateSettings'])->name('admin.settings.update');
     });
 });

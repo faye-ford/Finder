@@ -87,6 +87,13 @@
                 </span>
                 <span>Dashboard</span>
             </a>
+
+            <a href="{{ route('admin.announcements.index') }}" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-purple-700 transition-all hover:bg-gradient-to-r hover:from-purple-100 hover:to-violet-100">
+                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-pink-500 text-white shadow-sm group-hover:scale-110 group-hover:shadow-md group-hover:shadow-fuchsia-300/50 transition-all">
+                    <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                </span>
+                <span>Announcements</span>
+            </a>
             @endif
             @endauth
         </div>

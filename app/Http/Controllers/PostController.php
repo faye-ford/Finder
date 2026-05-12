@@ -167,6 +167,17 @@ class PostController extends Controller
             }
         }
 
+        // Check if it's an AJAX request via header
+        $isAjax = request()->header('X-Requested-With') === 'XMLHttpRequest';
+        
+        if ($isAjax || request()->ajax()) {
+            return response()->json([
+                'message' => $existing ? 'Like removed.' : 'Post liked.',
+                'likes_count' => $post->likes_count,
+                'liked' => !$existing
+            ]);
+        }
+
         return Redirect::back();
     }
 
